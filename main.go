@@ -244,6 +244,8 @@ func (cmd Command) handle() bool {
 		return cmd.set()
 	case "DEL":
 		return cmd.del()
+	case "PING":
+		return cmd.ping()
 	case "QUIT":
 		return cmd.quit()
 	default:
@@ -335,6 +337,17 @@ func (cmd *Command) quit() bool {
 	log.Println("Handle QUIT")
 	cmd.conn.Write([]uint8("+OK\r\n"))
 	return false
+}
+
+// ping Handles the PING command.
+func (cmd *Command) ping() bool {
+	if len(cmd.args) != 1 {
+		cmd.conn.Write([]uint8("-ERR wrong number of arguments for '" + cmd.args[0] + "' command\r\n"))
+		return true
+	}
+	log.Println("Handle PING")
+	cmd.conn.Write([]uint8("+PONG\r\n")) // Return PONG as the response to PING
+	return true
 }
 
 // setExpiration Handles expiration when passed as part of the 'set' command.
